@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -145,15 +146,23 @@ public class BillEditor extends JFrame implements ActionListener{
 		if(e.getActionCommand() == "set") {
 			if(adding) {
 				if(name_text.getText() != null && day_text.getText() != null && amount_text.getText() != null) {
-					Bill bill = new Bill(name_text.getText(), amount_text.getText(), Integer.parseInt(day_text.getText()));
-					bills.addElement(bill);
+					if(Pattern.matches("\\d+(\\.)?([0-9])*", (CharSequence) amount_text.getText())) {
+						if(Integer.parseInt(day_text.getText()) < 32 && Integer.parseInt(day_text.getText()) > 0) {
+							Bill bill = new Bill(name_text.getText(), Double.parseDouble(amount_text.getText())+"", Integer.parseInt(day_text.getText()));
+							bills.addElement(bill);
+						}
+					}
 				}
 			} else {
 				if(name_text.getText() != null && day_text.getText() != null && amount_text.getText() != null) {
-					bills.get(index).setName(name_text.getText());
-					bills.get(index).setPaymentDay(Integer.parseInt(day_text.getText()));
-					bills.get(index).setLastBill(amount_text.getText());
-					bills.get(index).setBillWebsite(webadr_text.getText());
+					if(Pattern.matches("\\d+(\\.)?([0-9])*", (CharSequence) amount_text.getText())) {
+						if(Integer.parseInt(day_text.getText()) < 32 && Integer.parseInt(day_text.getText()) > 0) {
+							bills.get(index).setName(name_text.getText());
+							bills.get(index).setPaymentDay(Integer.parseInt(day_text.getText()));
+							bills.get(index).setLastBill(Double.parseDouble(amount_text.getText())+"");
+							bills.get(index).setBillWebsite(webadr_text.getText());
+						}
+					}
 				}
 			}
 		} else if(e.getActionCommand() == "close") {
