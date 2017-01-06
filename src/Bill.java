@@ -12,6 +12,7 @@ public class Bill implements Serializable{
 	private String last_bill = "0.0";
 	private int day;
 	private int last_bill_month;
+	private int last_bill_year;
 	private String bill_website = "";
 	
 	// A set of past payments composed of (date, amount) pairs
@@ -27,10 +28,13 @@ public class Bill implements Serializable{
 			this.day = day;
 		else
 			this.day = 30;
-		if(Calendar.getInstance().get(Calendar.MONTH) == 0)
+		if(Calendar.getInstance().get(Calendar.MONTH) == 0) {
 			this.last_bill_month = 11;
-		else
+			this.last_bill_year = Calendar.getInstance().get(Calendar.YEAR) - 1;
+		} else {
 			this.last_bill_month = Calendar.getInstance().get(Calendar.MONTH) - 1;
+			this.last_bill_year = Calendar.getInstance().get(Calendar.YEAR);
+		}
 		
 		bill_history = new Vector<StringPair>();
 	}
@@ -74,6 +78,7 @@ public class Bill implements Serializable{
 	
 	public void billPaid() {
 		last_bill_month = Calendar.getInstance().get(Calendar.MONTH);
+		last_bill_year = Calendar.getInstance().get(Calendar.YEAR);
 	}
 	
 	public Vector<StringPair> getBillHistory() {
@@ -85,7 +90,7 @@ public class Bill implements Serializable{
 	 * @param amount
 	 */
 	public void updateBillHistory(String amount) {
-		StringPair strpair = new StringPair(Calendar.getInstance().get(Calendar.MONTH)+"/"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+		StringPair strpair = new StringPair((Calendar.getInstance().get(Calendar.MONTH)+1)+"/"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 				+"/"+Calendar.getInstance().get(Calendar.YEAR), amount);
 		bill_history.addElement(strpair);
 	}
@@ -95,8 +100,9 @@ public class Bill implements Serializable{
 	 * @return
 	 */
 	public int isItDue() {
-		if(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) >= day && Calendar.getInstance().get(Calendar.MONTH) > last_bill_month) {
-			if(Calendar.getInstance().get(Calendar.MONTH) > last_bill_month+1)
+		int current_date_value = (Calendar.getInstance().get(Calendar.YEAR) - last_bill_year)*12;
+		if(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) >= day && (current_date_value + Calendar.getInstance().get(Calendar.MONTH)) > last_bill_month) {
+			if((current_date_value + Calendar.getInstance().get(Calendar.MONTH)) > last_bill_month+1)
 				return 2;
 			else
 				return 1;
